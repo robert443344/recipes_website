@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>F1 Drift en el Malecón</title>
+  <meta name="description" content="Un Fórmula 1 haciendo donuts y derrapes en el Malecón de Santo Domingo, República Dominicana. Simulación 3D en tiempo real con three.js.">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- HUD -->
+  <header id="title">
+    <span class="flag"><i></i><i></i><i></i><i></i></span>
+    <div>
+      <h1>F1 · Drift en el Malecón</h1>
+      <p>Av. George Washington · Santo Domingo, República Dominicana</p>
+    </div>
+  </header>
+
+  <div id="label">Acelerando</div>
+
+  <nav id="buttons">
+    <button id="btnMode">Modo: Show automático</button>
+    <button id="btnCam">Cámara: TV</button>
+    <button id="btnTime">Hora: Atardecer</button>
+    <button id="btnSound">Sonido: No</button>
+    <button id="btnHelp">Ayuda</button>
+  </nav>
+
+  <div id="drift">
+    <b>DRIFT</b> <span id="angle">0°</span> <span id="combo">+0</span>
+    <small>Puntos: <span id="score">0</span></small>
+  </div>
+
+  <div id="dash">
+    <div id="leds"></div>
+    <div class="row">
+      <div class="gearbox"><span id="gear">N</span><small>marcha</small></div>
+      <div class="speedbox"><span id="spd">0</span><small>km/h</small></div>
+    </div>
+    <div class="pedals"><div><i id="thr"></i></div><div><i id="brk"></i></div></div>
+  </div>
+
+  <aside id="help" class="hidden">
+    <h2>Controles</h2>
+    <ul>
+      <li><kbd>W</kbd>/<kbd>↑</kbd> acelerar · <kbd>S</kbd>/<kbd>↓</kbd> frenar / marcha atrás</li>
+      <li><kbd>A</kbd><kbd>D</kbd>/<kbd>←</kbd><kbd>→</kbd> girar · <kbd>Espacio</kbd> freno de mano</li>
+      <li><kbd>1</kbd>/<kbd>Tab</kbd> show automático ⇄ manual</li>
+      <li><kbd>C</kbd> cámara · <kbd>T</kbd> hora del día · <kbd>M</kbd> sonido</li>
+      <li><kbd>R</kbd> recolocar · <kbd>B</kbd> borrar marcas · <kbd>H</kbd> ayuda</li>
+    </ul>
+    <p><b>Truco:</b> a baja velocidad, gas a fondo + volante girado = <em>donuts</em>.
+      Para derrapar: entra en la curva, pisa a fondo y suelta el volante: el asistente hace el contravolante.</p>
+  </aside>
+
+  <!-- Pantalla de inicio -->
+  <div id="start">
+    <div class="card">
+      <span class="flag big"><i></i><i></i><i></i><i></i></span>
+      <h2>Fórmula 1 en el Malecón</h2>
+      <p>Un monoplaza cerrado al tráfico haciendo donuts, trompos y derrapes frente al mar Caribe.</p>
+      <p id="loading">Generando el Malecón…</p>
+      <div class="actions">
+        <button id="startBtn" disabled>▶ Empezar con sonido</button>
+        <button id="startMute" class="ghost" disabled>Sin sonido</button>
+      </div>
+      <p class="hint">Pulsa <kbd>W</kbd> o las flechas para tomar el control · <kbd>C</kbd> cambia de cámara</p>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
