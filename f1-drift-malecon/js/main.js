@@ -263,7 +263,8 @@ function newTvShot(cp, velAng, spd) {
   if (shot === 'pista') {
     tv.pos.set(cp.x + Math.sin(velAng) * ahead, 1.5 + Math.random() * 1.2, side * (ROAD.halfWidth + 0.9));
   } else if (shot === 'publico') {
-    tv.pos.set(cp.x + Math.sin(velAng) * ahead * 0.6 + (Math.random() - 0.5) * 10, 1.75, side * (ROAD.halfWidth + 3.6));
+    // desde una tarima detrás del público, por encima de las cabezas
+    tv.pos.set(cp.x + Math.sin(velAng) * ahead * 0.6 + (Math.random() - 0.5) * 10, 3.4, side * (ROAD.halfWidth + 5.2));
   }
   lookTarget.set(cp.x, 0.7, cp.z);
 }
