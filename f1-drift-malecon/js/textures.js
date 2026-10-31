@@ -158,9 +158,10 @@ export function concrete(seed = 41, tint = [200, 196, 188]) {
 
 // ---------- fachadas ----------
 export function facade(kind, seed) {
-  const W = 256, H = 512;
-  const [c, g] = canvas(W, H);
-  const [ec, eg] = canvas(W, H);
+  const W = 256, H = 512, K = 2; // se dibuja en 256×512 lógico a doble resolución
+  const [c, g] = canvas(W * K, H * K);
+  const [ec, eg] = canvas(W * K, H * K);
+  g.scale(K, K); eg.scale(K, K);
   const rand = rng(seed);
   eg.fillStyle = '#000'; eg.fillRect(0, 0, W, H);
   const cols = 8, rows = 16, cw = W / cols, rh = H / rows;
@@ -202,8 +203,9 @@ export function facade(kind, seed) {
 
 // ---------- palmeras ----------
 export function frond() {
-  const W = 128, H = 512;
-  const [c, g] = canvas(W, H);
+  const W = 128, H = 512, K = 2;
+  const [c, g] = canvas(W * K, H * K);
+  g.scale(K, K);
   g.clearRect(0, 0, W, H);
   g.lineCap = 'round';
   const rand = rng(51);

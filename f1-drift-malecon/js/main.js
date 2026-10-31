@@ -18,8 +18,10 @@ if (mobile) document.body.classList.add('touch');
 
 // ---------------------------------------------------------------- render
 const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
-const maxDpr = Math.min(devicePixelRatio, mobile ? 1.5 : 1.75);
-let dpr = mobile ? Math.min(maxDpr, 1.1) : maxDpr;
+// nitidez: hasta 2,5× en teléfonos de pantalla densa y 2× en ordenador; nunca por debajo de 1,25× (o la del dispositivo)
+const maxDpr = Math.min(devicePixelRatio, mobile ? 2.5 : 2);
+const minDpr = Math.min(maxDpr, 1.25);
+let dpr = Math.min(maxDpr, mobile ? 2 : 1.75);
 renderer.setPixelRatio(dpr);
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -32,8 +34,12 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 22000);
 camera.position.set(-250, 4, 20);
 
-const rt = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { type: THREE.HalfFloatType, samples: mobile ? 0 : 4 });
+// suavizado de bordes MSAA 4× (en GPUs de teléfono es casi gratis)
+const rt = new THREE.WebGLRenderTarget(innerWidth * dpr, innerHeight * dpr, { type: THREE.HalfFloatType, samples: 4 });
 const composer = new EffectComposer(renderer, rt);
+// la imagen interna debe tener la densidad real de la pantalla, no los píxeles CSS
+composer.setPixelRatio(dpr);
+composer.setSize(innerWidth, innerHeight);
 composer.addPass(new RenderPass(scene, camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.32, 0.55, 0.9);
 composer.addPass(bloom);
@@ -398,14 +404,16 @@ fsBtn.onclick = async () => {
 };
 
 // resolución adaptativa: baja la nitidez si el móvil no llega a ~30 fps y la sube si sobra
-const perf = { frames: 0, time: 0 };
+const perf = { frames: 0, time: 0, warm: 4 };
 function adaptQuality(dt) {
+  // los primeros segundos compilan shaders: no cuentan
+  if (perf.warm > 0) { perf.warm -= dt; return; }
   perf.frames++; perf.time += dt;
   if (perf.time < 2) return;
   const fps = perf.frames / perf.time;
   perf.frames = 0; perf.time = 0;
   let next = dpr;
-  if (fps < 28 && dpr > 0.6) next = Math.max(0.6, dpr - 0.15);
+  if (fps < 28 && dpr > minDpr) next = Math.max(minDpr, dpr - 0.15);
   else if (fps > 52 && dpr < maxDpr) next = Math.min(maxDpr, dpr + 0.1);
   if (next !== dpr) {
     dpr = next;

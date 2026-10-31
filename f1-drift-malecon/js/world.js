@@ -414,7 +414,8 @@ export class World {
     const up = new THREE.Vector3(0, 1, 0);
     variants.forEach((v, vi) => {
       const mine = spots.filter((_, i) => i % 3 === vi);
-      const frondMat = new THREE.MeshStandardMaterial({ map: frondTex, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.75, color: 0xcfe0a8 });
+      // alphaToCoverage + MSAA: bordes de hoja suaves en vez de dentados
+      const frondMat = new THREE.MeshStandardMaterial({ map: frondTex, alphaTest: 0.45, alphaToCoverage: true, side: THREE.DoubleSide, roughness: 0.75, color: 0xcfe0a8 });
       const uniforms = { uTime: { value: 0 }, uCrown: { value: v.crown } };
       frondMat.onBeforeCompile = (sh) => {
         Object.assign(sh.uniforms, uniforms);
