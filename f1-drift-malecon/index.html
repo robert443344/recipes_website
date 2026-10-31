@@ -35,6 +35,7 @@
     <button id="btnTime">Hora: Atardecer</button>
     <button id="btnSound">Sonido: No</button>
     <button id="btnHelp">Ayuda</button>
+    <button id="btnFull">Pantalla completa</button>
   </nav>
 
   <div id="drift">
@@ -50,6 +51,20 @@
     </div>
     <div class="pedals"><div><i id="thr"></i></div><div><i id="brk"></i></div></div>
   </div>
+
+  <!-- Controles táctiles (solo en teléfonos y tabletas) -->
+  <div id="touch" aria-label="Controles táctiles">
+    <div class="pad left">
+      <button data-key="KeyA" aria-label="Girar a la izquierda">◀</button>
+      <button data-key="KeyD" aria-label="Girar a la derecha">▶</button>
+    </div>
+    <div class="pad right">
+      <button data-key="Space" class="hb" aria-label="Freno de mano">FRENO<br>DE MANO</button>
+      <button data-key="KeyS" class="brk" aria-label="Frenar">FRENO</button>
+      <button data-key="KeyW" class="gas" aria-label="Acelerar">GAS</button>
+    </div>
+  </div>
+  <div id="rotate">Gira el teléfono en horizontal para conducir mejor</div>
 
   <aside id="help" class="hidden">
     <h2>Controles</h2>
@@ -75,7 +90,8 @@
         <button id="startBtn" disabled>▶ Empezar con sonido</button>
         <button id="startMute" class="ghost" disabled>Sin sonido</button>
       </div>
-      <p class="hint">Pulsa <kbd>W</kbd> o las flechas para tomar el control · <kbd>C</kbd> cambia de cámara</p>
+      <p class="hint desk">Pulsa <kbd>W</kbd> o las flechas para tomar el control · <kbd>C</kbd> cambia de cámara</p>
+      <p class="hint mob">Toca <b>GAS</b> para tomar el control · usa el teléfono en horizontal</p>
     </div>
   </div>
 

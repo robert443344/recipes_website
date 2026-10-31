@@ -34,7 +34,8 @@ export const PRESETS = {
 };
 
 export class World {
-  constructor(scene, renderer) {
+  constructor(scene, renderer, opts = {}) {
+    this.mobile = !!opts.mobile;
     this.scene = scene;
     this.renderer = renderer;
     this.time = 0;
@@ -62,7 +63,7 @@ export class World {
   _lights() {
     const sun = new THREE.DirectionalLight(0xffffff, 3);
     sun.castShadow = true;
-    const hi = Math.min(4096, this.renderer.capabilities.maxTextureSize);
+    const hi = Math.min(this.mobile ? 2048 : 4096, this.renderer.capabilities.maxTextureSize);
     sun.shadow.mapSize.set(hi, hi);
     const c = sun.shadow.camera;
     c.left = -55; c.right = 55; c.top = 55; c.bottom = -55; c.near = 1; c.far = 600;
@@ -100,7 +101,7 @@ export class World {
   _water() {
     const normals = T.waterNormals();
     const water = new Water(new THREE.PlaneGeometry(20000, 20000), {
-      textureWidth: 512, textureHeight: 512,
+      textureWidth: this.mobile ? 256 : 512, textureHeight: this.mobile ? 256 : 512,
       waterNormals: normals,
       sunDirection: new THREE.Vector3(),
       sunColor: 0xffffff,

@@ -13,11 +13,14 @@ import { CarAudio } from './audio.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
-const mobile = matchMedia('(pointer: coarse)').matches;
+const mobile = matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+if (mobile) document.body.classList.add('touch');
 
 // ---------------------------------------------------------------- render
 const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.75));
+const maxDpr = Math.min(devicePixelRatio, mobile ? 1.5 : 1.75);
+let dpr = mobile ? Math.min(maxDpr, 1.1) : maxDpr;
+renderer.setPixelRatio(dpr);
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -159,6 +162,7 @@ $('btnTime').onclick = cyclePreset;
 $('btnSound').onclick = toggleSound;
 $('btnHelp').onclick = () => $('help').classList.toggle('hidden');
 $('startBtn').onclick = () => {
+  keepAwake();
   audio.start();
   $('btnSound').textContent = 'Sonido: Sí';
   $('start').classList.add('gone');
@@ -333,7 +337,9 @@ let paused = false;
 function frame() {
   if (paused) return;
   requestAnimationFrame(frame);
-  const dt = Math.min(clock.getDelta(), 1 / 20);
+  const raw = clock.getDelta();
+  const dt = Math.min(raw, 1 / 20);
+  if (raw > 0) adaptQuality(raw);
   const st = step(dt);
   if (audio.ctx) {
     const cp = car.group.position;
@@ -349,6 +355,63 @@ function frame() {
     }, simTime);
   }
   composer.render();
+}
+
+// ---------------------------------------------------------------- teléfono
+// pantalla siempre encendida mientras se ve la simulación
+async function keepAwake() {
+  try { await navigator.wakeLock?.request('screen'); } catch (e) { /* no disponible */ }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') keepAwake(); });
+$('startMute').addEventListener('click', keepAwake);
+
+// controles táctiles: cada botón "pulsa" una tecla mientras el dedo está encima
+document.querySelectorAll('#touch [data-key]').forEach((b) => {
+  const code = b.dataset.key;
+  const down = (e) => {
+    e.preventDefault();
+    try { b.setPointerCapture(e.pointerId); } catch (_) { /* sin captura */ }
+    if (mode === 'auto') setMode('manual');
+    keys.add(code); b.classList.add('on');
+    if (navigator.vibrate) navigator.vibrate(8);
+  };
+  const up = () => { keys.delete(code); b.classList.remove('on'); };
+  b.addEventListener('pointerdown', down);
+  b.addEventListener('pointerup', up);
+  b.addEventListener('pointercancel', up);
+  b.addEventListener('lostpointercapture', up);
+  b.addEventListener('contextmenu', (e) => e.preventDefault());
+});
+
+// pantalla completa (Android); en iPhone no existe y el botón se oculta
+const fsBtn = $('btnFull');
+if (!document.fullscreenEnabled) fsBtn.hidden = true;
+fsBtn.onclick = async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else {
+      await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+      try { await screen.orientation.lock('landscape'); } catch (_) { /* opcional */ }
+    }
+  } catch (_) { fsBtn.hidden = true; }
+};
+
+// resolución adaptativa: baja la nitidez si el móvil no llega a ~30 fps y la sube si sobra
+const perf = { frames: 0, time: 0 };
+function adaptQuality(dt) {
+  perf.frames++; perf.time += dt;
+  if (perf.time < 2) return;
+  const fps = perf.frames / perf.time;
+  perf.frames = 0; perf.time = 0;
+  let next = dpr;
+  if (fps < 28 && dpr > 0.6) next = Math.max(0.6, dpr - 0.15);
+  else if (fps > 52 && dpr < maxDpr) next = Math.min(maxDpr, dpr + 0.1);
+  if (next !== dpr) {
+    dpr = next;
+    renderer.setPixelRatio(dpr);
+    composer.setPixelRatio(dpr);
+    composer.setSize(innerWidth, innerHeight);
+  }
 }
 
 addEventListener('resize', () => {

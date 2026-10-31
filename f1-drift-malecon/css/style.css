@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --blue: #002d62;
   --red: #ce1126;
   --glass: rgba(10, 14, 22, 0.55);
@@ -9,7 +10,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0f17; color: var(--text); }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0f17; color: var(--text); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; }
 #app, #app canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
 
 button {
@@ -120,4 +121,68 @@ kbd {
   #help { left: 10px; right: 10px; bottom: 150px; max-width: none; }
   #btnHelp { display: none; }
   #drift b { font-size: 26px; }
+}
+
+/* ------------------------------------------------------------------ teléfono */
+#touch, #rotate, #btnFull, .hint.mob { display: none; }
+body.touch #btnFull:not([hidden]) { display: inline-block; }
+body.touch .hint.desk { display: none; }
+body.touch .hint.mob { display: block; }
+body.touch #btnHelp, body.touch #help { display: none; }
+
+body.touch #touch {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; pointer-events: none;
+  padding: 0 max(14px, env(safe-area-inset-right, 0px)) max(14px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+}
+#touch .pad { display: flex; gap: 12px; align-items: flex-end; pointer-events: auto; }
+#touch button {
+  width: 86px; height: 86px; border-radius: 50%; padding: 0;
+  font: 800 13px/1.1 "Segoe UI", system-ui, sans-serif; letter-spacing: .5px;
+  background: rgba(10, 14, 22, .42); border: 2px solid rgba(255, 255, 255, .28);
+  touch-action: none; -webkit-tap-highlight-color: transparent;
+}
+#touch .left button { font-size: 30px; }
+#touch .gas { width: 104px; height: 104px; border-color: #2bd96b; color: #b8ffd2; }
+#touch .brk { border-color: #ff3348; color: #ffc2c9; }
+#touch .hb { width: 66px; height: 66px; font-size: 10px; align-self: flex-start; }
+#touch button.on { background: rgba(255, 255, 255, .3); transform: scale(.94); }
+#touch .gas.on { background: rgba(43, 217, 107, .45); }
+#touch .brk.on { background: rgba(255, 51, 72, .45); }
+
+/* HUD compacto para el teléfono: el velocímetro sube al centro para dejar sitio a los mandos */
+body.touch #dash {
+  left: 50%; right: auto; bottom: auto; top: max(10px, env(safe-area-inset-top, 0px)); transform: translateX(-50%);
+  width: 196px; padding: 8px 12px;
+}
+body.touch .speedbox span { font-size: 38px; }
+body.touch .gearbox span { font-size: 30px; }
+body.touch #leds { margin-bottom: 4px; }
+body.touch #leds i { height: 6px; }
+body.touch #title { top: max(10px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: auto; padding: 6px 10px; }
+body.touch #title h1 { font-size: 13px; }
+body.touch #title p { display: none; }
+body.touch #label { top: calc(max(10px, env(safe-area-inset-top, 0px)) + 44px); left: max(10px, env(safe-area-inset-left, 0px)); font-size: 11px; }
+body.touch #buttons {
+  top: max(10px, env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); bottom: auto; left: auto;
+  flex-direction: column; align-items: flex-end; gap: 6px; max-width: 40vw;
+}
+body.touch #buttons button { padding: 6px 10px; font-size: 12px; }
+body.touch #drift { top: 30%; }
+body.touch #drift b { font-size: 24px; }
+body.touch #drift span { font-size: 19px; }
+
+/* en vertical: aviso para girar el teléfono y mandos algo más pequeños */
+@media (orientation: portrait) {
+  body.touch.manual #rotate {
+    display: block; position: fixed; left: 50%; top: 42%; transform: translateX(-50%); z-index: 4;
+    padding: 8px 14px; border-radius: 10px; font-size: 13px; text-align: center; pointer-events: none;
+    background: var(--glass); border: 1px solid var(--line); width: max-content; max-width: 80vw;
+  }
+  body.touch #dash { top: auto; bottom: calc(max(14px, env(safe-area-inset-bottom, 0px)) + 120px); }
+  body.touch #buttons { top: calc(max(10px, env(safe-area-inset-top, 0px)) + 44px); }
+  body.touch #label { top: calc(max(10px, env(safe-area-inset-top, 0px)) + 44px); }
+  #touch button { width: 70px; height: 70px; }
+  #touch .gas { width: 86px; height: 86px; }
+  #touch .hb { width: 56px; height: 56px; }
 }
