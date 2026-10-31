@@ -373,4 +373,4 @@ requestAnimationFrame(() => setTimeout(() => {
   }
 }, 30));
 
-window.__malecon = { pause() { paused = true; }, render() { composer.render(); }, get car() { return car; }, get auto() { return auto; }, get phys() { return phys; }, step, setCam, setPreset, setMode, camera };
+window.__malecon = { pause() { paused = true; }, render() { composer.render(); }, scene, renderer, composer, rt, bloom, get world() { return world; }, get car() { return car; }, get auto() { return auto; }, get phys() { return phys; }, step, setCam, setPreset, setMode, camera };
